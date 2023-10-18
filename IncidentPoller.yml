@@ -4,7 +4,8 @@
   gather_facts: true
 
   vars:
-    servicenow_instance: "https://dev141143.service-now.com"
+    servicenow_instance: "{{ instance_url }}"
+    #servicenow_instance: "https://dev141143.service-now.com"
     # servicenow_user: "admin"
     # servicenow_password: "ti!Uk/0qVHA7"
       #alerts: "['CPU Alert', 'Service Alert']"
