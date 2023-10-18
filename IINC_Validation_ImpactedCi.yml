@@ -6,7 +6,7 @@
     #file_path: "inputValidationUsecasePayload1.txt"
     ticketType: "e2e"
     incident_data_validator: "{{ incident_data_validator }}"
-    ci_name: "13.51.70.87"  # harcoding ci_name , change it later 
+    ci_name: "16.171.64.170"  # harcoding ci_name , change it later 
     # incident_validator_data: "{{ incident_data_validator }} "
     user_sys_id: "c4ae075997a5311070a93c7e6253af43"
     pat_token: "{{ pat_token }}"
