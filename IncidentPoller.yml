@@ -5,25 +5,17 @@
 
   vars:
     servicenow_instance: "{{ instance_url }}"
-    #servicenow_instance: "https://dev141143.service-now.com"
-    # servicenow_user: "admin"
-    # servicenow_password: "ti!Uk/0qVHA7"
-      #alerts: "['CPU Alert', 'Service Alert']"
-    #param: "?sysparm_query=short_descriptionLIKE"
     state: "%5Estate%3D1"
     mysql_query: "SELECT alert_name FROM incidentdata.config_table;"
     pat_token: "{{ pat_token }}"
     encoded_search_queries: ""
 
   tasks:
-
     - block:
         - name: Print PAT token 
           debug:
             var: pat_token
 
-
-    
         - name: Call the MySQL Query Playbook
           include_tasks: mysql_query_playbook.yml
           vars:
@@ -103,13 +95,6 @@
           loop: "{{ extracted_incidents }}"
           when: item.number is defined and item.short_description is defined and item.description is defined and item.cmdb_ci is defined
 
-
-
-
-        # - name: Display extracted incident numbers
-        #   debug:
-        #     var: incident_numbers
-
         - name: print
           debug:
             var: short_Descriptions
@@ -119,12 +104,10 @@
             final_incident_data: "{{ final_incident_data | default([]) + [{'Incident-number': item.number, 'ci_name': item.cmdb_ci, 'short_description': item.short_description, 'description': item.description, 'sys_id': item.sys_id}] }}"
           loop: "{{ extracted_incidents }}"
           when: item | length > 0 
-
  
         - name: Display final incident data
           debug:
             var: final_incident_data
-
 
         - name: call validator template in loop
           include_tasks: triggering-template-validator.yml
