@@ -57,6 +57,7 @@
             - "15"
           extra_vars:
             pat_token: "{{ patToken }}"
+            instance_url: "{{ var_url }}"
         register: job_launch_result  
 
       rescue:
