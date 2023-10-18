@@ -13,5 +13,6 @@
       incident_data_validator: "{{ incident_data_validator }}"
       # sys_id: "{{ sys_id }}"
       pat_token: "{{ pat_token }}"
+      servicenow_instance: "{{ instance_url }}"
   register: job_launch_result
 
