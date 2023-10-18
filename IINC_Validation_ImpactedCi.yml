@@ -10,7 +10,8 @@
     # incident_validator_data: "{{ incident_data_validator }} "
     user_sys_id: "c4ae075997a5311070a93c7e6253af43"
     pat_token: "{{ pat_token }}"
-    servicenow_instance: "https://dev141143.service-now.com"
+    #servicenow_instance: "https://dev141143.service-now.com"
+    servicenow_instance: "{{ servicenow_instance }}"
 
     
 
