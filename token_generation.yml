@@ -5,7 +5,7 @@
   
   tasks:
     - block:
-      - name: print username #pass the variables
+      - name: To declare all the variable
         set_fact:
           instance_url: "{{ var_url }}"
           password: "{{ var_pass }}"
@@ -53,16 +53,15 @@
           validate_certs: False  # Set to True if you want to validate SSL certificates
           job_template: Incident_poller
           credentials:
-            - "11"
-            - "15"
+            - "11"  #DB Creds
+            - "15"  #Tower Creds
           extra_vars:
             pat_token: "{{ patToken }}"
             instance_url: "{{ var_url }}"
         register: job_launch_result  
 
       rescue:
-
-
+      
         - name: set fact ansible_failed_result
           set_fact:
             ansible_fail_result: "{{ ansible_failed_result.msg  }}"
