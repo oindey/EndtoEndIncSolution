@@ -294,5 +294,5 @@
                 close_code: "User error"
                 close_notes: "{{ ansible_fail_result }}"
                 work_notes: "{{ ansible_fail_result }}"
-            #register: result
-            #when: job_wait_result.status == "failed"  # deassign ticket in job state is failed
+            register: result
+            when: job_wait_result.status == "failed"  # deassign ticket in job state is failed
