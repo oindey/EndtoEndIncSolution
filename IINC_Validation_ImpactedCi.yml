@@ -8,7 +8,7 @@
     incident_data_validator: "{{ incident_data_validator }}"
     ci_name: "16.171.64.170"  # harcoding ci_name , change it later 
     # incident_validator_data: "{{ incident_data_validator }} "
-    user_sys_id: "a41a12482f863110227fa1fef699b6e5"
+    user_sys_id: "4583e347b4672110320f8dc279c804bb"
     pat_token: "{{ pat_token }}"
     #servicenow_instance: "https://dev141143.service-now.com"
     servicenow_instance: "{{ servicenow_instance }}"
