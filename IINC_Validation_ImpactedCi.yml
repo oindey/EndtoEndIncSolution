@@ -172,7 +172,7 @@
           tower_username: "{{ var_tower_username }}"
           tower_password: "{{ var_tower_password }}"
           validate_certs: False  # Set to True if you want to validate SSL certificates
-          #job_template: "{{ tempIdFilter }}"
+          job_template: "{{ tempIdFilter }}"
           credentials:
             - "{{ credId }}"
           extra_vars:
