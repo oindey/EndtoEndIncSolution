@@ -6,7 +6,7 @@
     #file_path: "inputValidationUsecasePayload1.txt"
     ticketType: "e2e"
     incident_data_validator: "{{ incident_data_validator }}"
-    ci_name: "X16.171.64.170"  # harcoding ci_name , change it later 
+    ci_name: "16.171.64.170"  # harcoding ci_name , change it later 
     # incident_validator_data: "{{ incident_data_validator }} "
     user_sys_id: "4583e347b4672110320f8dc279c804bb"
     pat_token: "{{ pat_token }}"
@@ -172,7 +172,7 @@
           tower_username: "{{ var_tower_username }}"
           tower_password: "{{ var_tower_password }}"
           validate_certs: False  # Set to True if you want to validate SSL certificates
-          job_template: "{{ tempIdFilter }}"
+          #job_template: "{{ tempIdFilter }}"
           credentials:
             - "{{ credId }}"
           extra_vars:
