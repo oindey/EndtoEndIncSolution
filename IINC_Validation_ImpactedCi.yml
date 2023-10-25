@@ -247,7 +247,7 @@
           return_content: yes
           force_basic_auth: yes
           body:
-            incident_state: "4"
+            incident_state: "6"
             close_code: "Resolved by request"
             close_notes: "Automation successfully resolved"
             work_notes: "{{ extracted_output }}"
