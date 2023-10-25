@@ -251,7 +251,7 @@
             close_code: "Resolved by request"
             close_notes: "Automation successfully resolved"
             work_notes: "{{ extracted_output }}"
-            assigned_to: ""
+            assigned_to: "{{ user_sys_id }}"
         when: job_wait_result.status == "successful"  # resolve ticket in job state is successful
 
       
