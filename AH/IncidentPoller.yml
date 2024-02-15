@@ -4,58 +4,14 @@
   gather_facts: true
 
   vars:
-    servicenow_instance: "{{ instance_url }}"
-    state: "%5Estate%3D1"
-    mysql_query: "SELECT alert_name FROM incidentdata.config_table;"
     pat_token: "{{ pat_token }}"
     encoded_search_queries: ""
-
+    DOP_url: "https://api.0bc7-dop.aws.cloud.airbus-v.corp//incident-business-service/incidents/pollMessage/1782?applicationId=34ce55de-8955-44e8-b5b8-d548b2b6b8d0"
   tasks:
     - block:
-        - name: Print PAT token 
-          debug:
-            var: pat_token
-
-        - name: Call the MySQL Query Playbook
-          include_tasks: mysql_query_playbook.yml
-          vars:
-            query: "{{ mysql_query }}"
-          register: alert_names
-
-        - name: print var
-          debug:
-            var: alert_names
-
-        - name: Loop through alert_names and concatenate search string
-          set_fact:
-            encoded_search_queries: "{{ encoded_search_queries }}%5Eshort_descriptionLIKE{{ item|replace(' ', '%20') }}%5EOR"
-          loop: "{{ alert_names }}"
-          loop_control:
-            loop_var: item
-
-        - name: Remove trailing '%5EOR' from encoded_search_queries
-          set_fact:
-            encoded_search_queries: "{{ encoded_search_queries[:-5] }}"
-        
-        - name: Remove '%5E' after 'OR' in search_string
-          set_fact:
-            encoded_search_queries: "{{ encoded_search_queries|regex_replace('(OR)%5E', '\\1') }}"
-
-        - name: Display the custom encoded_search_queries
-          debug:
-            var: encoded_search_queries
-
-        - name: create the uri string from snow api
-          set_fact:
-            alert_url: "{{ servicenow_instance }}/api/now/table/incident?sysparm_query={{ state }}{{ encoded_search_queries }}"
-
-        - name: Display the custom search string
-          debug:
-            var: alert_url
-
-        - name: Fetch Incidents based on alert type and state
+        - name: Fetch Incidents based on subscription ID
           uri:
-            url: "{{ alert_url }}"
+            url: "{{ DOP_url }}"
             method: GET
             headers:
               Accept: "application/json"
@@ -69,73 +25,41 @@
           debug:
             var: incident_data
 
-        - name: Extract incident data
+        - name: Parse JSON data
           set_fact:
-            extracted_incidents: "{{ incident_data.json.result }}"
+            incidents: "{{ incidents | default([]) + [item.body | from_json] }}"
+          loop: "{{ incident_data }}"
 
-        - name: Display Extract incident data
-          debug:
-            var: extracted_incidents
-
-        - name: Initialize a list to store incident numbers
+        - name: Display fetched information
           set_fact:
-            incident_numbers: []
-            short_Descriptions: []
-            ci_name: []
-            description: []
-            sys_id: []
-
-        - name: extract specific field
-          set_fact:
-            incident_numbers: "{{ incident_numbers + [item.number] }}"
-            short_Descriptions: "{{ short_Descriptions + [item.short_description] }}"
-            description: "{{ description + [item.description] }}"
-            ci_name: "{{ ci_name + [item.cmdb_ci] }}"
-            sys_id: "{{ sys_id + [item.sys_id] }}"
-          loop: "{{ extracted_incidents }}"
-          when: item.number is defined and item.short_description is defined and item.description is defined and item.cmdb_ci is defined
-
-        - name: print
-          debug:
-            var: short_Descriptions
+            msg: "systemIncidentId: {{ item.systemIncidentId }}, shortDescription: {{ item.shortDescription }}, fullDescription: {{ item.fullDescription }}, impactedCi: {{ item.impactedCi }}, ticketId: {{ item.ticketId }}"
+          loop: "{{ incidents }}"
+          loop_control:
+            label: "{{ item.systemIncidentId }}"
             
-        - name: Extract incident numbers and short descriptions
+        - name: Parse JSON data and store in variable
           set_fact:
-            final_incident_data: "{{ final_incident_data | default([]) + [{'Incident-number': item.number, 'ci_name': item.cmdb_ci, 'short_description': item.short_description, 'description': item.description, 'sys_id': item.sys_id}] }}"
-          loop: "{{ extracted_incidents }}"
-          when: item | length > 0 
- 
-        - name: Display final incident data
-          debug:
-            var: final_incident_data
+            incident_info_list: "{{ incident_info_list | default([]) + [{ 'systemIncidentId': item.systemIncidentId, 'shortDescription': item.shortDescription, 'fullDescription': item.fullDescription, 'impactedCi': item.impactedCi, 'ticketId': item.ticketId }] }}"
+          loop: "{{ incidents }}"
+          loop_control:
+            label: "{{ item.systemIncidentId }}"
 
         - name: call validator template in loop
           include_tasks: triggering-template-validator.yml
           vars:
             incident_data_validator: "{{ item }}"
-          loop: "{{ final_incident_data }}"
+          loop: "{{ incident_info_list }}"
           loop_control:
-            loop_var: item  
+            loop_var: item
   
 
       rescue:
-        # - name: Log Output For Failure
-        #   debug:
-        #     msg: "Log : FAILED : Task {{ ansible_failed_task.name }} Failed and the ERROR: {{ ansible_failed_result }}"
-        #   failed_when: True
-
-        - name: set fact ansible_failed_result
-          set_fact:
-            ansible_fail_result: "{{ ansible_failed_result.msg  }}"
-
-        - name: print ansible_fail
+        - name: Log Output For Failure
           debug:
-            var: ansible_fail_result 
+            msg: "Log : FAILED : Task {{ ansible_failed_task.name }} Failed and the ERROR: {{ ansible_failed_result }}"
+          failed_when: True
 
-        - name: call logging playbook 
-          include_tasks: logging.yml
-          vars:
-            ansible_failed_results: "{{ ansible_fail_result  }}"
+        
 
 
 
