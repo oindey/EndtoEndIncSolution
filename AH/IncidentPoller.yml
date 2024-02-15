@@ -24,6 +24,14 @@
         - name: Display incident data
           debug:
             var: incident_data
+        # - name: send code of polling success
+        #   set_fact:
+        #     code: "INP03* - Automation In Progress - Polling successful"
+
+        - name: send code of polling success
+          debug:
+            msg: "APS: Polling success"
+          when: incident_data is defined
 
         - name: Parse JSON data
           set_fact:
@@ -58,6 +66,14 @@
           debug:
             msg: "Log : FAILED : Task {{ ansible_failed_task.name }} Failed and the ERROR: {{ ansible_failed_result }}"
           failed_when: True
+
+        - name: send code of polling Failed
+          debug:
+            msg: "APS-PNM: Polling Failed"
+          
+
+        
+          
 
         
 
