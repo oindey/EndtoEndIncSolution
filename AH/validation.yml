@@ -23,9 +23,17 @@
 
       - name: print to debug
         debug:
-          var: description
-
-
+          var: description   
+          
+      - name: send code of validation success
+          set_fact:
+            code: "INP03* - Automation In Progress - validation successful"
+            
+      - name: call update DOP playbook 
+          include_tasks: updateDOP.yml
+          vars:
+            work_note: "{{ code }}"
+            
   ## calling end template by passing credId , tempId, ci-name , description , short-description
 
       - name: Launch AAP Job Template
@@ -41,7 +49,6 @@
             HOSTS: "{{ ciName }}"
             DESCRIPTION: "{{ description }}"
         register: job_launch_result
-      
       
       - name: Wait for Job Completion
         awx.awx.job_wait:
@@ -89,5 +96,14 @@
             debug:
               msg: "Log : FAILED : Task {{ ansible_failed_task.name }} Failed and the ERROR: {{ ansible_failed_result }}"
             failed_when: True
+
+          - name: send code of calling end template failure
+            set_fact:
+              code: "FAL04* - Automation Failed - {{ ansible_failed_result }}"
+            
+          - name: call update DOP playbook 
+              include_tasks: updateDOP.yml
+              vars:
+                work_note: "{{ code }}"
 
          
